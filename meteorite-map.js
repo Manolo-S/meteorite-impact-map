@@ -1,4 +1,16 @@
 var strikeData = [];
+var width;
+var height;
+var countries;
+var meteorites;
+
+function getYear(strike){
+      if (strike.properties.year === null) {
+            return 'not available';
+      } else {
+            return new Date(strike.properties.year).getFullYear();
+      }
+}
 
 function getStrikeData(strike) {
       if (strike.geometry === null) {
@@ -9,6 +21,11 @@ function getStrikeData(strike) {
       meteorite.x = coord[0];
       meteorite.y = coord[1];
       meteorite.mass = parseInt(strike.properties.mass);
+      meteorite.fall = strike.properties.fall;
+      meteorite.mass = strike.properties.mass;
+      meteorite.recclass = strike.properties.recclass;
+      meteorite.reclat = strike.properties.reclat;
+      meteorite.year = getYear(strike);
       var m = meteorite.mass;
 
       switch (true) {
@@ -46,20 +63,28 @@ function getStrikeData(strike) {
 
 
 queue()
-      .defer(d3.json, "world.geojson")
-      .defer(d3.json, "meteorite-date-strike.json")
+      .defer(d3.json, "http://emeeks.github.io/d3ia/world.geojson")
+      .defer(d3.json, "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json")
       .await(function(error, file1, file2) {
+            countries = file1;
+            meteorites = file2;
             createMap(file1, file2);
       });
 
 
+
 function createMap(countries, meteorites) {
-      var width = 1000;
-      var height = 1000;
+
+      var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+      width = $(window).width();
+      height = $(window).height();
       meteorites.features.map(getStrikeData);
       var projection = d3.geo.mercator()
-            .scale(120)
-            .translate([width / 2, height / 2]);
+            .scale(250)
+            .translate([width/2, height/2]);
       var geoPath = d3.geo.path().projection(projection);
       d3.select("svg").selectAll("path").data(countries.features)
             .enter()
@@ -83,6 +108,23 @@ function createMap(countries, meteorites) {
             .attr("cy", function(d) {
                   return projection([d.x, d.y])[1]
             })
+            .on("mouseover", function(d) {
+            tooltip.transition()
+                .duration(100)
+                .style("opacity", .9);
+            tooltip.html("<p>" + d.year + "</p>") 
+                  .style("left", (d3.event.pageX + 5) + "px")
+                  .style("top", (d3.event.pageY - 28) + "px");               
+            })
+            .on("mouseout", function(d) {
+                tooltip.transition()
+                    .duration(100)
+                    .style("opacity", 0);
+              });
+
+
+
+
 
       var mapZoom = d3.behavior.zoom().translate(projection.translate()).scale(projection.scale()).on("zoom", zoomed);
       d3.select("svg").call(mapZoom);
@@ -92,6 +134,9 @@ function createMap(countries, meteorites) {
             d3.selectAll("path.countries").attr("d", geoPath);
 
             d3.selectAll("circle.strikes")
+                  .attr("r", function(d) {
+                        return d.r
+                  })
                   .attr("cx", function(d) {
                         return projection([d.x, d.y])[0]
                   })
@@ -99,6 +144,7 @@ function createMap(countries, meteorites) {
                         return projection([d.x, d.y])[1]
                   })
       }
+
 
       function zoomButton(zoomDirection) {
             if (zoomDirection == "in") {
@@ -115,8 +161,6 @@ function createMap(countries, meteorites) {
             zoomed();
       }
 }
-
-
 
 d3.select("#controls").append("button").on("click", function() {
       zoomButton("in")

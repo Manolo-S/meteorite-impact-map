@@ -13,21 +13,42 @@
   background-color: #266D98;
   }
   svg {
-  height: 1000;
-  width: 1000;
+  height: 100%;
+  width: 100%;
   border: 1px solid #266D98;
   }
+
+  div.tooltip
+{
+    font-family: sans-serif;
+    font-size: 12px;
+
+    position: absolute;
+
+    max-width: 200px;
+    padding: 5px;
+
+    pointer-events: none;
+
+    -webkit-border-radius: 5px;
+       -moz-border-radius: 5px;
+            border-radius: 5px;
+    background-color: white;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, .4);
+       -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, .4);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, .4);
+}
+
   
   .countries {
   fill: white;
-  /*fill-opacity: .5;*/
   stroke: #266D98;
   stroke-width: 1px;
   }
   </style>
   <body>
     <div id="viz">
-      <svg id='map'>
+      <svg>
       </svg>
     </div>
     <div id="controls" />
