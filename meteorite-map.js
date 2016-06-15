@@ -1,8 +1,12 @@
+(function(){
+
 var strikeData = [];
 var width;
 var height;
-var countries;
-var meteorites;
+
+var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
 
 function getYear(strike){
       if (strike.properties.year === null) {
@@ -20,6 +24,7 @@ function getStrikeData(strike) {
       var coord = strike.geometry.coordinates;
       meteorite.x = coord[0];
       meteorite.y = coord[1];
+      meteorite.name = strike.properties.name;
       meteorite.mass = parseInt(strike.properties.mass);
       meteorite.fall = strike.properties.fall;
       meteorite.mass = strike.properties.mass;
@@ -29,56 +34,30 @@ function getStrikeData(strike) {
       var m = meteorite.mass;
 
       switch (true) {
-            // case (m < 10000):
-            //       meteorite.r = 2;
-            //       meteorite.color = '#ffffb2';
-            //       break;
             case (m < 100000):
                   meteorite.r = 1.5;
-                  meteorite.color = '#d4b9da';
+                  meteorite.color = '#980043';
                   break;
             case (m >= 100000 && m < 1000000):
                   meteorite.r = 5;
-                  meteorite.color = '#c994c7';
+                  meteorite.color = '#dd1c77';
                   break;
-            case (m >= 1000000 && m < 10000000):
+            case (m >= 1000000 && m < 15000000):
                   meteorite.r = 15;
                   meteorite.color = '#df65b0';
                   break;
-            case (m >= 10000000 && m < 20000000):
-                  meteorite.r = 20;
-                  meteorite.color = '#dd1c77';
-                  break;
-            case (m >= 20000000):
+            case (m >= 15000000):
                   meteorite.r = 25;
-                  meteorite.color = '#980043';
+                  meteorite.color = '#d4b9da';
                   break;
       }
       if ((meteorite.x !== 0 && meteorite.y !== 0) && meteorite.mass > 0) {
             strikeData.push(meteorite);
-      } else {
-            return meteorite
-      }
+      } 
 }
 
 
-queue()
-      .defer(d3.json, "http://emeeks.github.io/d3ia/world.geojson")
-      .defer(d3.json, "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json")
-      .await(function(error, file1, file2) {
-            countries = file1;
-            meteorites = file2;
-            createMap(file1, file2);
-      });
-
-
-
 function createMap(countries, meteorites) {
-
-      var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
-
       width = $(window).width();
       height = $(window).height();
       meteorites.features.map(getStrikeData);
@@ -112,7 +91,9 @@ function createMap(countries, meteorites) {
             tooltip.transition()
                 .duration(100)
                 .style("opacity", .9);
-            tooltip.html("<p>" + d.year + "</p>") 
+            tooltip.html("<p>" + "<strong>Name: </strong>" + d.name + "</p><p>" + "<strong>Year: </strong>" + d.year + "</p>" +
+                         "<p>" + "<strong>Mass: </strong>" + d.mass + "</p><p>" + "<strong>Fall: </strong>" + d.fall + "</p>" +
+                         "<p>" + "<strong>Reclass: </strong>" + d.recclass + "</p><p>" + "<strong>Reclat: </strong>" + d.reclat + "</p>") 
                   .style("left", (d3.event.pageX + 5) + "px")
                   .style("top", (d3.event.pageY - 28) + "px");               
             })
@@ -121,9 +102,6 @@ function createMap(countries, meteorites) {
                     .duration(100)
                     .style("opacity", 0);
               });
-
-
-
 
 
       var mapZoom = d3.behavior.zoom().translate(projection.translate()).scale(projection.scale()).on("zoom", zoomed);
@@ -146,25 +124,14 @@ function createMap(countries, meteorites) {
       }
 
 
-      function zoomButton(zoomDirection) {
-            if (zoomDirection == "in") {
-                  var newZoom = mapZoom.scale() * 1.5;
-                  var newX = ((mapZoom.translate()[0] - (width / 2)) * 1.5) + width / 2;
-                  var newY = ((mapZoom.translate()[1] - (height / 2)) * 1.5) + height / 2;
-            } else if (zoomDirection == "out") {
-                  var newZoom = mapZoom.scale() * .75;
-                  var newX = ((mapZoom.translate()[0] - (width / 2)) * .75) + width / 2;
-                  var newY = ((mapZoom.translate()[1] - (height / 2)) * .75) + height / 2;
-            }
-
-            mapZoom.scale(newZoom).translate([newX, newY])
-            zoomed();
-      }
 }
 
-d3.select("#controls").append("button").on("click", function() {
-      zoomButton("in")
-}).html("Zoom In");
-d3.select("#controls").append("button").on("click", function() {
-      zoomButton("out")
-}).html("Zoom Out");
+queue()
+      .defer(d3.json, "http://emeeks.github.io/d3ia/world.geojson")
+      .defer(d3.json, "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json")
+      .await(function(error, file1, file2) {
+            createMap(file1, file2);
+      });
+
+})();
+

@@ -1,12 +1,10 @@
 <html>
   <head>
-    <title>D3 in Action Chapter 7 - Example 1</title>
+    <title>World Meteorite Strike Map</title>
     <meta charset="utf-8" />
     <script src="d3.min.js" charset="utf-8"></script>
-    <!-- <script src="colorbrewer.js" type="text/JavaScript"></script> -->
     <script src="queue.js" type="text/JavaScript"></script>
     <script src='jquery.v3.min.js' type='text/JavaScript'></script>
-
   </head>
   <style>
   body {
@@ -17,28 +15,7 @@
   width: 100%;
   border: 1px solid #266D98;
   }
-
-  div.tooltip
-{
-    font-family: sans-serif;
-    font-size: 12px;
-
-    position: absolute;
-
-    max-width: 200px;
-    padding: 5px;
-
-    pointer-events: none;
-
-    -webkit-border-radius: 5px;
-       -moz-border-radius: 5px;
-            border-radius: 5px;
-    background-color: white;
-    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, .4);
-       -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, .4);
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, .4);
-}
-
+  
   
   .countries {
   fill: white;
@@ -47,11 +24,8 @@
   }
   </style>
   <body>
-    <div id="viz">
-      <svg>
-      </svg>
-    </div>
-    <div id="controls" />
-    </body>
-      <script src='meteorite-map.js' type="text/JavaScript"> </script>
-  </html>
+    <svg>
+    </svg>
+  </body>
+  <script src='meteorite-map.js' type="text/JavaScript"> </script>
+</html>
