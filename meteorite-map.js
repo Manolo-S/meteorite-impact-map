@@ -4,9 +4,7 @@ var strikeData = [];
 var width;
 var height;
 
-var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+
 
 function getYear(strike){
       if (strike.properties.year === null) {
@@ -65,6 +63,12 @@ function createMap(countries, meteorites) {
             .scale(250)
             .translate([width/2, height/2]);
       var geoPath = d3.geo.path().projection(projection);
+
+      var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+        
       d3.select("svg").selectAll("path").data(countries.features)
             .enter()
             .append("path")
@@ -133,5 +137,5 @@ queue()
             createMap(file1, file2);
       });
 
-})();
+})()
 
